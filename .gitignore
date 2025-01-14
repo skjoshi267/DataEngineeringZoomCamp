@@ -1,3 +1,6 @@
+# Folders
+nyc_taxi_db/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -152,3 +155,4 @@ cython_debug/
 #.idea/
 .vscode/launch.json
 .vscode/tasks.json
+Week1/docker_commands.txt
