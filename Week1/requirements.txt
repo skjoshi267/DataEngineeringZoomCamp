@@ -1,2 +1,11 @@
 # To ensure app dependencies are ported from your virtual environment/host machine into your container, run 'pip freeze > requirements.txt' in the terminal to overwrite this file
-pandas=2.2.3
+greenlet==3.1.1
+numpy==2.2.1
+pandas==2.2.3
+python-dateutil==2.9.0.post0
+pytz==2024.2
+six==1.17.0
+SQLAlchemy==2.0.37
+typing_extensions==4.12.2
+tzdata==2024.2
+psycopg2==2.9.10
