@@ -157,3 +157,5 @@ cython_debug/
 .vscode/tasks.json
 Week1/docker_commands.txt
 Week1/yellow_tripdata_2019-01.csv
+Week1/config.ini
+Week1/file.csv.gz
