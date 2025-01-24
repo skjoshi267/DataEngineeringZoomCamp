@@ -114,7 +114,8 @@ Answers:
 - 104,838;  199,013;  109,645;  27,688;  35,202
 
 ```104,838;  199,013;  109,645;  27,688;  35,202```
-```SELECT SUM(total)
+```
+SELECT SUM(total)
 FROM
 (
 SELECT CEIL(trip_distance) AS distance,COUNT(*) AS total
@@ -123,7 +124,8 @@ WHERE (DATE(lpep_pickup_datetime) >= '2019-10-01' AND DATE(lpep_pickup_datetime)
 AND (trip_distance >= 0 AND trip_distance <= 1)
 GROUP BY CEIL(trip_distance)
 ORDER BY distance
-)```
+)
+```
 
 
 ## Question 4. Longest trip for each day
@@ -139,8 +141,10 @@ Tip: For every day, we only care about one single trip with the longest distance
 - 2019-10-31
 
 ```2019-10-31```
-```SELECT "/green_tripdata_2019-10".lpep_pickup_datetime FROM "/green_tripdata_2019-10" WHERE trip_distance = (SELECT MAX(trip_distance)
-FROM "/green_tripdata_2019-10")```
+```
+SELECT "/green_tripdata_2019-10".lpep_pickup_datetime FROM "/green_tripdata_2019-10" WHERE trip_distance = (SELECT MAX(trip_distance)
+FROM "/green_tripdata_2019-10")
+```
 
 ## Question 5. Three biggest pickup zones
 
@@ -155,7 +159,8 @@ Consider only `lpep_pickup_datetime` when filtering by date.
 - Bedford, East Harlem North, Astoria Park
 
 ```- East Harlem North, East Harlem South, Morningside Heights```
-```SELECT n."Zone", ne.Location_Code, ne.Total 
+```
+SELECT n."Zone", ne.Location_Code, ne.Total 
 FROM public.nyc_taxi_zones as n
 INNER JOIN 
 (SELECT "/green_tripdata_2019-10"."PULocationID" AS Location_Code,SUM(total_amount) AS Total
@@ -164,7 +169,8 @@ WHERE DATE("/green_tripdata_2019-10".lpep_pickup_datetime) = '2019-10-18'
 GROUP BY "/green_tripdata_2019-10"."PULocationID"
 HAVING SUM(total_amount) > 13000
 ORDER BY Total DESC) as ne
-ON n."LocationID" = ne.Location_Code```
+ON n."LocationID" = ne.Location_Code
+```
 
 ## Question 6. Largest tip
 
@@ -182,7 +188,8 @@ We need the name of the zone, not the ID.
 - East Harlem South
 
 ```- JFK Airport```
-```SELECT n."Zone"
+```
+SELECT n."Zone"
 FROM "/green_tripdata_2019-10" AS g
 INNER JOIN public.nyc_taxi_zones AS n
 ON g."DOLocationID" = n."LocationID"
@@ -192,7 +199,8 @@ FROM "/green_tripdata_2019-10" as g
 INNER JOIN public.nyc_taxi_zones as n
 ON g."PULocationID" = n."LocationID"
 AND n."Zone" = 'East Harlem North'
-AND (DATE(lpep_pickup_datetime) >= '2019-10-01' AND DATE(lpep_pickup_datetime) < '2019-11-01'))```
+AND (DATE(lpep_pickup_datetime) >= '2019-10-01' AND DATE(lpep_pickup_datetime) < '2019-11-01'))
+```
 
 
 ## Terraform
