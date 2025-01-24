@@ -25,10 +25,9 @@ What's the version of `pip` in the image?
 - 23.3.1
 - 23.2.1
 
-```docker run -it --name homework_py python:3.12.8```
+```docker run -it --name homework_py python:3.12.8 bash```
 ```root@9fd3c0cebb23:/# python -m pip --version```
 ```pip 24.3.1 from /usr/local/lib/python3.12/site-packages/pip (python 3.12)```
-
 
 ## Question 2. Understanding Docker networking and docker-compose
 
@@ -74,6 +73,9 @@ volumes:
 
 If there are more than one answers, select only one of them
 
+```- postgres:5432```
+```- db:5432```
+
 ##  Prepare Postgres
 
 Run Postgres and load data as shown in the videos
@@ -111,6 +113,18 @@ Answers:
 - 104,793;  202,661;  109,603;  27,678;  35,189
 - 104,838;  199,013;  109,645;  27,688;  35,202
 
+```104,838;  199,013;  109,645;  27,688;  35,202```
+```SELECT SUM(total)
+FROM
+(
+SELECT CEIL(trip_distance) AS distance,COUNT(*) AS total
+FROM "/green_tripdata_2019-10"
+WHERE (DATE(lpep_pickup_datetime) >= '2019-10-01' AND DATE(lpep_pickup_datetime) < '2019-11-01')
+AND (trip_distance >= 0 AND trip_distance <= 1)
+GROUP BY CEIL(trip_distance)
+ORDER BY distance
+)```
+
 
 ## Question 4. Longest trip for each day
 
@@ -124,6 +138,9 @@ Tip: For every day, we only care about one single trip with the longest distance
 - 2019-10-26
 - 2019-10-31
 
+```2019-10-31```
+```SELECT "/green_tripdata_2019-10".lpep_pickup_datetime FROM "/green_tripdata_2019-10" WHERE trip_distance = (SELECT MAX(trip_distance)
+FROM "/green_tripdata_2019-10")```
 
 ## Question 5. Three biggest pickup zones
 
@@ -137,6 +154,17 @@ Consider only `lpep_pickup_datetime` when filtering by date.
 - Morningside Heights, Astoria Park, East Harlem South
 - Bedford, East Harlem North, Astoria Park
 
+```- East Harlem North, East Harlem South, Morningside Heights```
+```SELECT n."Zone", ne.Location_Code, ne.Total 
+FROM public.nyc_taxi_zones as n
+INNER JOIN 
+(SELECT "/green_tripdata_2019-10"."PULocationID" AS Location_Code,SUM(total_amount) AS Total
+FROM "/green_tripdata_2019-10"
+WHERE DATE("/green_tripdata_2019-10".lpep_pickup_datetime) = '2019-10-18'
+GROUP BY "/green_tripdata_2019-10"."PULocationID"
+HAVING SUM(total_amount) > 13000
+ORDER BY Total DESC) as ne
+ON n."LocationID" = ne.Location_Code```
 
 ## Question 6. Largest tip
 
@@ -152,6 +180,19 @@ We need the name of the zone, not the ID.
 - JFK Airport
 - East Harlem North
 - East Harlem South
+
+```- JFK Airport```
+```SELECT n."Zone"
+FROM "/green_tripdata_2019-10" AS g
+INNER JOIN public.nyc_taxi_zones AS n
+ON g."DOLocationID" = n."LocationID"
+WHERE g.tip_amount = 
+(SELECT MAX(g.tip_amount) AS tip
+FROM "/green_tripdata_2019-10" as g
+INNER JOIN public.nyc_taxi_zones as n
+ON g."PULocationID" = n."LocationID"
+AND n."Zone" = 'East Harlem North'
+AND (DATE(lpep_pickup_datetime) >= '2019-10-01' AND DATE(lpep_pickup_datetime) < '2019-11-01'))```
 
 
 ## Terraform

@@ -16,4 +16,4 @@ COPY pipeline.py pipeline.py
 RUN python -m pip install -r requirements.txt
 
 # During debugging, this entry point will be overridden. For more information, please refer to https://aka.ms/vscode-docker-python-debug
-ENTRYPOINT [ "python" , "pipeline.py"]
+ENTRYPOINT [ "python" , "pipeline.py" ]

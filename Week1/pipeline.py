@@ -21,12 +21,28 @@ def update_table(data,cfg,connect,table_name):
         return result
 
 def create_table(header_row,cfg):
-    #"postgresql://admin:admin@localhost:5432/nyc_taxi"
+    #"postgresql://admin:admin@postgres_sql:5432/nyc_taxi"
     try:
         connection_str = f'postgresql://{cfg["user"]}:{cfg["password"]}@{cfg["host"]}:{cfg["port"]}/{cfg["db"]}'
         engine = create_engine(connection_str)
         connect = engine.connect()
         table_name = cfg["url"][-30:].replace(".csv.gz","")
+        print(f'Creating table with {table_name}')
+        header_row.to_sql(table_name,con=connect,if_exists="replace",index=False)
+        result = True
+    except Exception as ex:
+        print(f'Error with DB Operations: {ex}')
+        result = False
+    finally:
+        return result,connect,table_name
+    
+def create_table_zone(header_row,cfg):
+    #"postgresql://admin:admin@localhost:5432/nyc_taxi"
+    try:
+        connection_str = f'postgresql://{cfg["user"]}:{cfg["password"]}@{cfg["host"]}:{cfg["port"]}/{cfg["db"]}'
+        engine = create_engine(connection_str)
+        connect = engine.connect()
+        table_name = f'nyc_taxi_zones'
         print(f'Creating table with {table_name}')
         header_row.to_sql(table_name,con=connect,if_exists="replace",index=False)
         result = True
@@ -46,16 +62,33 @@ def process_data(file,cfg):
                 if not response: 
                     break
             
-            data["tpep_pickup_datetime"] = pd.to_datetime(data["tpep_pickup_datetime"])
-            data["tpep_dropoff_datetime"] = pd.to_datetime(data["tpep_dropoff_datetime"])
+            data["lpep_pickup_datetime"] = pd.to_datetime(data["lpep_pickup_datetime"])
+            data["lpep_dropoff_datetime"] = pd.to_datetime(data["lpep_dropoff_datetime"])
             print(f'Uploading records: {len(data)}')
             result = update_table(data,cfg,connect,table_name)
             if not result:
                 break
 
+def process_zone(file,cfg):
+    print(f'Processing Data with {file}')
+    data_itr = pd.read_csv(file,iterator=True)
+    for idx,data in enumerate(data_itr):
+        if idx == 0:
+            response,connect,table_name = create_table_zone(data.head(0),cfg)
+            if not response: 
+                break
+            
+        print(f'Uploading records: {len(data)}')
+        result = update_table(data,cfg,connect,table_name)
+        if not result:
+            break
+
 def download_data(url):
     try:
-        file_name = "data.csv.gz"
+        if "taxi_zone" in url:
+            file_name = "zones.csv"
+        else:
+            file_name = "data.csv.gz"
         response = requests.get(url)
         if response.status_code == 200:
             with open(file_name,"wb") as file:
@@ -75,6 +108,7 @@ def set_params():
     database = config["postgres-params"]["postgres_db"]
     port = config["postgres-params"]["postgres_port"]
     url = config["postgres-params"]["download_url"]
+    zones = config["postgres-params"]["zones"]
     
     print(f'Parameters read from config.ini')
     return {
@@ -83,7 +117,8 @@ def set_params():
         "password":password,
         "port":port,
         "db":database,
-        "url":url
+        "url":url,
+        "zones":zones
         }
     
 if __name__ == "__main__":
@@ -92,7 +127,9 @@ if __name__ == "__main__":
     if len(cfg["url"]):
         print(f'Downloading file from {cfg["url"]}')
         file  = download_data(cfg["url"])
+        zones  = download_data(cfg["zones"])
         result = process_data(file,cfg)
+        result_zones = process_zone(zones,cfg)
     else:
         print(f'Unable to download data. Invalid URL')
 
