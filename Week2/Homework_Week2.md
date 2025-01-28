@@ -22,7 +22,11 @@ As a hint, Kestra makes that process really easy:
 1. You can leverage the backfill functionality in the [scheduled flow](../../../02-workflow-orchestration/flows/07_gcp_taxi_scheduled.yaml) to backfill the data for the year 2021. Just make sure to select the time period for which data exists i.e. from `2021-01-01` to `2021-07-31`. Also, make sure to do the same for both `yellow` and `green` taxi data (select the right service in the `taxi` input).
 2. Alternatively, run the flow manually for each of the seven months of 2021 for both `yellow` and `green` taxi data. Challenge for you: find out how to loop over the combination of Year-Month and `taxi`-type using `ForEach` task which triggers the flow for each combination using a `Subflow` task.
 
-```Using Backfill Trigger prepared Yellow and Green Taxi data from 2019-2021```
+
+
+```
+Using Backfill Trigger prepared Yellow and Green Taxi data from 2019-2021
+```
 
 ### Quiz Questions
 
@@ -34,7 +38,8 @@ Complete the Quiz shown below. It’s a set of 6 multiple-choice questions to te
 - 364.7 MB
 - 692.6 MB
 
-```- 128.3 MB
+```
+- 128.3 MB
 ```
 
 2) What is the rendered value of the variable `file` when the inputs `taxi` is set to `green`, `year` is set to `2020`, and `month` is set to `04` during execution?
@@ -43,7 +48,8 @@ Complete the Quiz shown below. It’s a set of 6 multiple-choice questions to te
 - `green_tripdata_04_2020.csv`
 - `green_tripdata_2020.csv`
 
-```green_tripdata_2020-04.csv
+```
+green_tripdata_2020-04.csv
 ```
 
 3) How many rows are there for the `Yellow` Taxi data for all CSV files in the year 2020?
@@ -52,10 +58,12 @@ Complete the Quiz shown below. It’s a set of 6 multiple-choice questions to te
 - 18,324,219
 - 29,430,127
 
-```24,648,499
+```
+24,648,499
 ```
 
-```Using Count Rows function i PGADMIN for yellow_tripdata Table
+```
+Using Count Rows function in PGADMIN for yellow_tripdata Table
 ```
 
 4) How many rows are there for the `Green` Taxi data for all CSV files in the year 2020?
@@ -64,12 +72,14 @@ Complete the Quiz shown below. It’s a set of 6 multiple-choice questions to te
 - 1,734,051
 - 1,342,034
 
-```1,734,051
+```
+1,734,051
 ```
 
-```SELECT COUNT(*)
-	FROM public.green_tripdata
-	WHERE EXTRACT(YEAR FROM lpep_pickup_datetime) = 2020;
+```
+SELECT COUNT(*)
+FROM public.green_tripdata
+WHERE EXTRACT(YEAR FROM lpep_pickup_datetime) = 2020;
 ```
 
 5) How many rows are there for the `Yellow` Taxi data for the March 2021 CSV file?
@@ -78,12 +88,14 @@ Complete the Quiz shown below. It’s a set of 6 multiple-choice questions to te
 - 1,925,152
 - 2,561,031
 
-```1,925,152
+```
+1,925,152
 ```
 
-```SELECT COUNT(*)
-	FROM public.yellow_tripdata
-	WHERE EXTRACT(YEAR FROM tpep_pickup_datetime) = 2021 AND EXTRACT(MONTH FROM tpep_pickup_datetime) = 3;
+```
+SELECT COUNT(*)
+FROM public.yellow_tripdata
+WHERE EXTRACT(YEAR FROM tpep_pickup_datetime) = 2021 AND EXTRACT(MONTH FROM tpep_pickup_datetime) = 3;
 ```
 
 6) How would you configure the timezone to New York in a Schedule trigger?
