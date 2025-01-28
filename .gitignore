@@ -201,3 +201,5 @@ override.tf.json
 .terraformrc
 terraform.rc
 Week1/.terraform.lock.hcl
+Week2/docker-compose.yaml
+Week2/servers.json
